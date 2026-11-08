@@ -1,0 +1,48 @@
+# Local infrastructure for Session & Conversation Management.
+#
+#   docker compose up -d        start PostgreSQL and Redis
+#   docker compose down         stop them (data is kept in the named volumes)
+#   docker compose down -v      stop them and delete all data
+#
+# PostgreSQL holds the full chat history (Django ORM) and LangGraph checkpoints.
+# Redis holds user sessions and the history cache, with automatic expiry.
+# Both listen on 127.0.0.1 only, on ports that do not clash with other projects.
+
+name: conversation-management
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-conversations}
+      POSTGRES_USER: ${POSTGRES_USER:-conversations}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-conversations_dev}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5440}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-conversations} -d ${POSTGRES_DB:-conversations}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    mem_limit: 256m
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    # Sessions expire by TTL, so no persistence is needed; cap memory and evict
+    # keys that have a TTL first if the limit is ever reached.
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "64mb", "--maxmemory-policy", "volatile-lru"]
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6390}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    mem_limit: 96m
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

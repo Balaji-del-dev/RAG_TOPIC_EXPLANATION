@@ -8,6 +8,7 @@ Generation) chatbot, each with simple, interview-ready explanations.
 | Folder | Stage | What it contains |
 |---|---|---|
 | [Input_Valid](Input_Valid/) | 3. Input validation & security | 11 checks (Pydantic, fastText, NeMo Guardrails, Microsoft Presidio, Microsoft Purview, LLM Guard, Llama Guard) in one Python package, served by FastAPI and Django, plus a "How it works" page with a live demo and interview questions |
+| [conversation_management](conversation_management/) | 4. Session & conversation management | Django ORM / DRF conversations and transcript, LangGraph checkpointer memory (follow-up detection, question rewriting, token budget, summaries), PostgreSQL + Redis (sessions, expiry, cache), playground page |
 
 ## Quick start (Input_Valid)
 

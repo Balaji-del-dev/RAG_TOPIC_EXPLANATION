@@ -1,0 +1,78 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conversation Manager · Playground</title>
+  <link rel="stylesheet" href="{% static 'conversations/fonts/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'conversations/playground.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <p class="brand"><span class="stage-tile">4</span>Conversation Manager</p>
+    <div class="who">Signed in as <strong>{{ user.username }}</strong>
+      <form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button class="link">Sign out</button></form>
+    </div>
+  </header>
+
+  <div class="app" id="app" data-max-tokens="{{ max_tokens }}">
+    <!-- conversations -------------------------------------------------- -->
+    <aside class="sidebar" aria-label="Your conversations">
+      <button class="primary new-chat" id="new-chat" type="button">+ New conversation</button>
+      <h2 class="label">Your conversations</h2>
+      <ul class="conversation-list" id="conversation-list"><li class="empty">Loading…</li></ul>
+      <p class="hint">Only your own conversations appear here. Another user's ID returns 404.</p>
+    </aside>
+
+    <!-- chat ---------------------------------------------------------------- -->
+    <main class="chat" aria-label="Chat">
+      <div class="chat-head">
+        <div>
+          <h1 id="chat-title">New conversation</h1>
+          <p class="chat-meta" id="chat-meta">Send a message to start.</p>
+        </div>
+        <button class="link danger" id="delete-chat" type="button" hidden>Delete conversation</button>
+      </div>
+      <p class="banner" id="banner" role="status" hidden></p>
+      <ol class="thread" id="thread" aria-live="polite"></ol>
+      <form class="composer" id="composer">
+        <label class="sr-only" for="message">Message</label>
+        <textarea id="message" rows="2" maxlength="4000" placeholder="Ask an HR question, then a follow-up like “And for part-time staff?”"></textarea>
+        <button class="primary" type="submit" id="send">Send</button>
+      </form>
+      <div class="suggestions" aria-label="Try these">
+        <button type="button" data-suggest="How many sick days do employees get per year?">How many sick days…</button>
+        <button type="button" data-suggest="And for part-time staff?">And for part-time staff?</button>
+        <button type="button" data-suggest="Can they carry them forward to next year?">Can they carry them forward?</button>
+        <button type="button" data-suggest="What is the notice period for resignation?">New topic: notice period</button>
+        <button type="button" data-suggest="Does it change after probation?">Does it change after probation?</button>
+      </div>
+    </main>
+
+    <!-- memory inspector ---------------------------------------------------- -->
+    <aside class="inspector" aria-label="What the system remembers">
+      <section class="panel">
+        <h2 class="label">Session <span class="tag">Redis</span></h2>
+        <dl id="session-panel"><dt>Status</dt><dd>No session yet</dd></dl>
+        <p class="hint">Ends after {{ session_minutes }} idle minutes. Each message resets the timer.</p>
+      </section>
+      <section class="panel">
+        <h2 class="label">Last turn <span class="tag">LangGraph</span></h2>
+        <dl id="turn-panel"><dt>Status</dt><dd>Send a message</dd></dl>
+      </section>
+      <section class="panel">
+        <h2 class="label">AI memory <span class="tag">Checkpointer</span></h2>
+        <dl id="memory-panel"><dt>Messages kept</dt><dd>–</dd></dl>
+        <p class="hint">Over {{ max_tokens }} tokens, older messages are summarised. The full transcript stays in PostgreSQL.{% if llm_model %} LLM: <code>{{ llm_model }}</code>.{% endif %}</p>
+      </section>
+      <section class="panel">
+        <h2 class="label">Conversation <span class="tag">PostgreSQL</span></h2>
+        <dl id="conversation-panel"><dt>Status</dt><dd>–</dd></dl>
+        <p class="hint">Read-only after {{ idle_hours }} idle hours.</p>
+      </section>
+    </aside>
+  </div>
+
+  <script src="{% static 'conversations/playground.js' %}" defer></script>
+</body>
+</html>

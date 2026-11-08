@@ -1,0 +1,12 @@
+[project]
+name = "rag-conversation-management"
+version = "1.0.0"
+description = "Stage 4 of a RAG chatbot: session & conversation management (Django ORM / DRF, LangGraph checkpointer, PostgreSQL, Redis)"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["llm: needs a running LLM server (LLM_BASE_URL); run with RUN_LLM_TESTS=1"]
+filterwarnings = ["ignore::DeprecationWarning"]
