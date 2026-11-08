@@ -21,6 +21,7 @@
       <input type="hidden" name="next" value="{{ next }}">
       <button type="submit" class="primary">Sign in</button>
     </form>
+    <p class="hint">New here? Read <a href="{% url 'how-it-works' %}">how it works</a> first.</p>
     <p class="hint">Demo users: <code>alice</code> and <code>bob</code>, password <code>demo-password-123</code> (create them with <code>python manage.py create_demo_users</code>).</p>
   </main>
 </body>

@@ -1,0 +1,498 @@
+{
+ "recorded_on": "2026-11-08",
+ "llm": "qwen2.5:1.5b",
+ "scenarios": [
+  {
+   "id": "follow_ups",
+   "title": "Follow-up questions",
+   "icon": "💬",
+   "intro": "Alice asks a question, then short follow-ups, then changes topic.",
+   "entries": [
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "How many sick days do employees get per year?",
+     "status": 201,
+     "conversation_id": "af254cd4-5c7b-461c-864e-d184f9616b37",
+     "new_conversation": true,
+     "session_started": true,
+     "session_minutes": 30,
+     "user_sequence": 1,
+     "answer_sequence": 2,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"How many sick days do employees get per year?\"",
+     "memory": {
+      "is_follow_up": false,
+      "follow_up_reasons": [
+       "first question in the conversation"
+      ],
+      "standalone_question": "How many sick days do employees get per year?",
+      "resolution": "unchanged",
+      "context_tokens": 10,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 1200,
+     "messages_in_memory": 2,
+     "transcript_messages": 2,
+     "conversation_status": "active"
+    },
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "And for part-time staff?",
+     "status": 201,
+     "conversation_id": "af254cd4-5c7b-461c-864e-d184f9616b37",
+     "new_conversation": false,
+     "session_started": false,
+     "session_minutes": 30,
+     "user_sequence": 3,
+     "answer_sequence": 4,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"How many sick days do part-time staff get per year?\"",
+     "memory": {
+      "is_follow_up": true,
+      "follow_up_reasons": [
+       "starts like a continuation",
+       "very short (4 words)"
+      ],
+      "standalone_question": "How many sick days do part-time staff get per year?",
+      "resolution": "llm",
+      "context_tokens": 56,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 1200,
+     "messages_in_memory": 4,
+     "transcript_messages": 4,
+     "conversation_status": "active"
+    },
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "Can they carry them forward to next year?",
+     "status": 201,
+     "conversation_id": "af254cd4-5c7b-461c-864e-d184f9616b37",
+     "new_conversation": false,
+     "session_started": false,
+     "session_minutes": 30,
+     "user_sequence": 5,
+     "answer_sequence": 6,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"Can sick days carried forward to the next year?\"",
+     "memory": {
+      "is_follow_up": true,
+      "follow_up_reasons": [
+       "refers back with \"they\""
+      ],
+      "standalone_question": "Can sick days carried forward to the next year?",
+      "resolution": "llm",
+      "context_tokens": 96,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 1200,
+     "messages_in_memory": 6,
+     "transcript_messages": 6,
+     "conversation_status": "active"
+    },
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "What is the notice period for resignation?",
+     "status": 201,
+     "conversation_id": "af254cd4-5c7b-461c-864e-d184f9616b37",
+     "new_conversation": false,
+     "session_started": false,
+     "session_minutes": 30,
+     "user_sequence": 7,
+     "answer_sequence": 8,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"What is the notice period for resignation?\"",
+     "memory": {
+      "is_follow_up": false,
+      "follow_up_reasons": [],
+      "standalone_question": "What is the notice period for resignation?",
+      "resolution": "unchanged",
+      "context_tokens": 137,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 1200,
+     "messages_in_memory": 8,
+     "transcript_messages": 8,
+     "conversation_status": "active"
+    },
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "Does it change after probation?",
+     "status": 201,
+     "conversation_id": "af254cd4-5c7b-461c-864e-d184f9616b37",
+     "new_conversation": false,
+     "session_started": false,
+     "session_minutes": 30,
+     "user_sequence": 9,
+     "answer_sequence": 10,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"Does the notice period for resignation change after probation?\"",
+     "memory": {
+      "is_follow_up": true,
+      "follow_up_reasons": [
+       "refers back with \"it\""
+      ],
+      "standalone_question": "Does the notice period for resignation change after probation?",
+      "resolution": "llm",
+      "context_tokens": 179,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 1200,
+     "messages_in_memory": 10,
+     "transcript_messages": 10,
+     "conversation_status": "active"
+    }
+   ]
+  },
+  {
+   "id": "summary",
+   "title": "A long conversation",
+   "icon": "🗂️",
+   "intro": "A small token budget (110) so the summary appears quickly. Production uses 1200.",
+   "entries": [
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "I am a part-time employee in the Chennai office.",
+     "status": 201,
+     "conversation_id": "1e2a3beb-3d96-451d-b994-0af05bee4c8d",
+     "new_conversation": true,
+     "session_started": true,
+     "session_minutes": 30,
+     "user_sequence": 1,
+     "answer_sequence": 2,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"I am a part-time employee in the Chennai office.\"",
+     "memory": {
+      "is_follow_up": false,
+      "follow_up_reasons": [
+       "first question in the conversation"
+      ],
+      "standalone_question": "I am a part-time employee in the Chennai office.",
+      "resolution": "unchanged",
+      "context_tokens": 11,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 110,
+     "messages_in_memory": 2,
+     "transcript_messages": 2,
+     "conversation_status": "active"
+    },
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "How many casual leave days do part-time employees get each year?",
+     "status": 201,
+     "conversation_id": "1e2a3beb-3d96-451d-b994-0af05bee4c8d",
+     "new_conversation": false,
+     "session_started": false,
+     "session_minutes": 30,
+     "user_sequence": 3,
+     "answer_sequence": 4,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"How many casual leave days do part-time employees get each year?\"",
+     "memory": {
+      "is_follow_up": false,
+      "follow_up_reasons": [],
+      "standalone_question": "How many casual leave days do part-time employees get each year?",
+      "resolution": "unchanged",
+      "context_tokens": 59,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 110,
+     "messages_in_memory": 4,
+     "transcript_messages": 4,
+     "conversation_status": "active"
+    },
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "Can I take them in half days?",
+     "status": 201,
+     "conversation_id": "1e2a3beb-3d96-451d-b994-0af05bee4c8d",
+     "new_conversation": false,
+     "session_started": false,
+     "session_minutes": 30,
+     "user_sequence": 5,
+     "answer_sequence": 6,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"Can part-time employees take casual leave in half days?\"",
+     "memory": {
+      "is_follow_up": true,
+      "follow_up_reasons": [
+       "refers back with \"them\""
+      ],
+      "standalone_question": "Can part-time employees take casual leave in half days?",
+      "resolution": "llm",
+      "context_tokens": 107,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 110,
+     "messages_in_memory": 6,
+     "transcript_messages": 6,
+     "conversation_status": "active"
+    },
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "Do I need my manager to approve it?",
+     "status": 201,
+     "conversation_id": "1e2a3beb-3d96-451d-b994-0af05bee4c8d",
+     "new_conversation": false,
+     "session_started": false,
+     "session_minutes": 30,
+     "user_sequence": 7,
+     "answer_sequence": 8,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"Do part-time employees need their manager's approval for taking casual leave in half days?\"",
+     "memory": {
+      "is_follow_up": true,
+      "follow_up_reasons": [
+       "refers back with \"it\""
+      ],
+      "standalone_question": "Do part-time employees need their manager's approval for taking casual leave in half days?",
+      "resolution": "llm",
+      "context_tokens": 62,
+      "summarized": true,
+      "summary_method": "llm",
+      "summary": "The user is a part-time employee in the Chennai office. They asked how many casual leave days part-time employees get each year and if they can take them in half days."
+     },
+     "budget": 110,
+     "messages_in_memory": 2,
+     "transcript_messages": 8,
+     "conversation_status": "active"
+    }
+   ]
+  },
+  {
+   "id": "ownership",
+   "title": "Someone else's conversation",
+   "icon": "🔒",
+   "intro": "Bob has Alice's conversation ID and tries to read and write in it.",
+   "entries": [
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "My salary review is next week. When is the salary credited each month?",
+     "status": 201,
+     "conversation_id": "4788d7ee-0982-40bf-a50e-b41c57f9690e",
+     "new_conversation": true,
+     "session_started": true,
+     "session_minutes": 30,
+     "user_sequence": 1,
+     "answer_sequence": 2,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"My salary review is next week. When is the salary credited each month?\"",
+     "memory": {
+      "is_follow_up": false,
+      "follow_up_reasons": [
+       "first question in the conversation"
+      ],
+      "standalone_question": "My salary review is next week. When is the salary credited each month?",
+      "resolution": "unchanged",
+      "context_tokens": 15,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 1200,
+     "messages_in_memory": 2,
+     "transcript_messages": 2,
+     "conversation_status": "active"
+    },
+    {
+     "type": "request",
+     "who": "bob",
+     "method": "GET",
+     "label": "Bob opens Alice's conversation by its ID",
+     "status": 404,
+     "detail": "Conversation not found.",
+     "step": 5,
+     "note": "Same answer as for an ID that does not exist, so Bob learns nothing."
+    },
+    {
+     "type": "request",
+     "who": "bob",
+     "method": "POST",
+     "label": "Bob tries to write in it",
+     "status": 404,
+     "detail": "Conversation not found.",
+     "step": 5,
+     "note": "Nothing is saved; Alice's transcript is unchanged."
+    },
+    {
+     "type": "request",
+     "who": "bob",
+     "method": "GET",
+     "label": "Bob tries a made-up ID",
+     "status": 404,
+     "detail": "Conversation not found.",
+     "step": 1,
+     "note": "Not a version-4 UUID, so it is refused before any database query."
+    },
+    {
+     "type": "request",
+     "who": "bob",
+     "method": "POST",
+     "label": "Bob sends a broken conversation_id in the body",
+     "status": 400,
+     "detail": "conversation_id: Must be a valid UUID.",
+     "step": 1,
+     "note": "DRF's UUIDField rejects it as invalid input."
+    },
+    {
+     "type": "request",
+     "who": "alice",
+     "method": "GET",
+     "label": "Alice opens her own conversation",
+     "status": 200,
+     "detail": "Conversation \"My salary review is next week. When is the salary credited…\" returned",
+     "step": 5,
+     "note": "The owner gets it."
+    }
+   ]
+  },
+  {
+   "id": "session",
+   "title": "Away for 30 minutes",
+   "icon": "⏱️",
+   "intro": "Alice stops chatting, and her Redis session expires before she writes again.",
+   "entries": [
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "How do I apply for maternity leave?",
+     "status": 201,
+     "conversation_id": "c4346a09-00cc-4bdb-b2d2-2cdc4519abe2",
+     "new_conversation": true,
+     "session_started": true,
+     "session_minutes": 30,
+     "user_sequence": 1,
+     "answer_sequence": 2,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"How do I apply for maternity leave?\"",
+     "memory": {
+      "is_follow_up": false,
+      "follow_up_reasons": [
+       "first question in the conversation"
+      ],
+      "standalone_question": "How do I apply for maternity leave?",
+      "resolution": "unchanged",
+      "context_tokens": 8,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 1200,
+     "messages_in_memory": 2,
+     "transcript_messages": 2,
+     "conversation_status": "active"
+    },
+    {
+     "type": "event",
+     "text": "30 minutes pass without a message. Redis deletes Alice's session key (TTL)."
+    },
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "How many weeks is it?",
+     "status": 201,
+     "conversation_id": "bb73e757-d845-4aa4-bc69-f48fb34f3819",
+     "new_conversation": true,
+     "session_started": true,
+     "session_minutes": 30,
+     "user_sequence": 1,
+     "answer_sequence": 2,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"How many weeks is it?\"",
+     "memory": {
+      "is_follow_up": false,
+      "follow_up_reasons": [
+       "first question in the conversation"
+      ],
+      "standalone_question": "How many weeks is it?",
+      "resolution": "unchanged",
+      "context_tokens": 6,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 1200,
+     "messages_in_memory": 2,
+     "transcript_messages": 2,
+     "conversation_status": "active"
+    }
+   ]
+  },
+  {
+   "id": "expired",
+   "title": "Back after a day",
+   "icon": "📅",
+   "intro": "Alice comes back to an old conversation the next day.",
+   "entries": [
+    {
+     "type": "turn",
+     "who": "alice",
+     "text": "What is the work from home policy?",
+     "status": 201,
+     "conversation_id": "e2bb8f16-fff0-471b-87da-216300110439",
+     "new_conversation": true,
+     "session_started": true,
+     "session_minutes": 30,
+     "user_sequence": 1,
+     "answer_sequence": 2,
+     "answer": "(Placeholder answer) The retrieval stage would now search the HR documents for: \"What is the work from home policy?\"",
+     "memory": {
+      "is_follow_up": false,
+      "follow_up_reasons": [
+       "first question in the conversation"
+      ],
+      "standalone_question": "What is the work from home policy?",
+      "resolution": "unchanged",
+      "context_tokens": 8,
+      "summarized": false,
+      "summary_method": "",
+      "summary": null
+     },
+     "budget": 1200,
+     "messages_in_memory": 2,
+     "transcript_messages": 2,
+     "conversation_status": "active"
+    },
+    {
+     "type": "event",
+     "text": "25 hours pass. The conversation is now idle for longer than 24 hours."
+    },
+    {
+     "type": "request",
+     "who": "alice",
+     "method": "POST",
+     "label": "Alice adds a follow-up to it",
+     "status": 410,
+     "detail": "This conversation ended after 24 hours without activity. Its history is still readable. Start a new conversation to continue.",
+     "step": 10,
+     "note": "The conversation becomes read-only and its LangGraph memory is deleted."
+    },
+    {
+     "type": "request",
+     "who": "alice",
+     "method": "GET",
+     "label": "Alice reads its history",
+     "status": 200,
+     "detail": "2 messages returned",
+     "step": 3,
+     "note": "Reading still works: the transcript in PostgreSQL is kept."
+    }
+   ]
+  }
+ ]
+}

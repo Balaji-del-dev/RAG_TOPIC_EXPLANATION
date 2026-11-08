@@ -83,7 +83,9 @@ ollama pull qwen2.5:1.5b                               # LLM for rewriting and s
 .venv/bin/python manage.py runserver 127.0.0.1:8040
 ```
 
-Open **http://127.0.0.1:8040/** (playground) and sign in as `alice`. The admin is at `/admin/`.
+Open **http://127.0.0.1:8040/how-it-works** for the plain-English explanation (a demo of real recorded conversations and a lesson with interview questions for each of the 10 parts), and **http://127.0.0.1:8040/** for the playground (sign in as `alice`). The admin is at `/admin/`.
+
+Re-record the explanation page's demo after changing any rule: `python manage.py record_explainer_examples`.
 
 ```bash
 TOKEN=$(.venv/bin/python manage.py create_demo_users | awk '/^alice/{print $3}' | cut -d= -f2)

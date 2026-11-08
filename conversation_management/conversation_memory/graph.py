@@ -41,7 +41,7 @@ from conversation_memory.context_window import (
     count_text_tokens,
     needs_summary,
 )
-from conversation_memory.follow_up import detect_follow_up
+from conversation_memory.follow_up import FollowUpResult, detect_follow_up
 from conversation_memory.question_resolution import resolve_question
 from conversation_memory.state import ConversationState
 from conversation_memory.summarization import split_for_summary, summarize_history
@@ -78,8 +78,13 @@ def build_conversation_graph(
     def resolve_question_node(state: ConversationState) -> dict:
         if not state["is_follow_up"]:
             return {"standalone_question": state["question"], "resolution": "unchanged"}
+        detection = FollowUpResult(True, state.get("follow_up_reasons", []))
         resolution = resolve_question(
-            state["question"], history_before_this_question(state), state.get("summary", ""), llm
+            state["question"],
+            history_before_this_question(state),
+            state.get("summary", ""),
+            llm,
+            clearly_incomplete=detection.clearly_incomplete,
         )
         return {"standalone_question": resolution.question, "resolution": resolution.method}
 

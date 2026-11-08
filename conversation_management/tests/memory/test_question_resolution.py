@@ -55,3 +55,17 @@ def test_examples_are_sent_as_chat_turns():
     turns = _example_turns()
     assert len(turns) == 2 * len(EXAMPLES)
     assert isinstance(turns[0], HumanMessage) and isinstance(turns[1], AIMessage)
+
+
+def test_unchanged_reply_for_a_pronoun_only_follow_up_is_kept(fake_llm):
+    # "they" flagged it, but it is a complete question: the LLM returning it unchanged is right
+    question = "Can they fire me during probation?"
+    result = resolve_question(question, HISTORY, "", fake_llm(question), clearly_incomplete=False)
+    assert result.method == "unchanged" and result.question == question
+
+
+def test_strong_signals_mark_a_question_as_clearly_incomplete():
+    from conversation_memory.follow_up import detect_follow_up
+
+    assert detect_follow_up("And for part-time staff?", has_history=True).clearly_incomplete
+    assert not detect_follow_up("Can they fire me during probation?", has_history=True).clearly_incomplete

@@ -61,10 +61,18 @@ FAIRLY_SHORT = 8
 MEDIUM = 12
 
 
+STRONG_REASONS = ("starts like a continuation", "very short", "starts in the middle of a sentence")
+
+
 @dataclass(frozen=True)
 class FollowUpResult:
     is_follow_up: bool
     reasons: list[str] = field(default_factory=list)
+
+    @property
+    def clearly_incomplete(self) -> bool:
+        """A strong sign that the question cannot stand alone (not just a pronoun)."""
+        return any(reason.startswith(STRONG_REASONS) for reason in self.reasons)
 
 
 def detect_follow_up(question: str, has_history: bool) -> FollowUpResult:

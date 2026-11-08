@@ -10,7 +10,7 @@
 <body>
   <header class="topbar">
     <p class="brand"><span class="stage-tile">4</span>Conversation Manager</p>
-    <div class="who">Signed in as <strong>{{ user.username }}</strong>
+    <div class="who"><a href="{% url 'how-it-works' %}">How it works</a> · Signed in as <strong>{{ user.username }}</strong>
       <form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button class="link">Sign out</button></form>
     </div>
   </header>

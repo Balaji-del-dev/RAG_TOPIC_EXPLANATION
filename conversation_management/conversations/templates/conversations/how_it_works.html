@@ -1,0 +1,253 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How it works · Session &amp; Conversation Management</title>
+  <link rel="stylesheet" href="{% static 'conversations/fonts/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'conversations/explainer.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#demo">Skip to the demo</a>
+  <header class="topbar">
+    <a class="brand" href="{% url 'how-it-works' %}"><span class="stage-tile">4</span>Conversation Manager</a>
+    <nav aria-label="Main">
+      <a href="{% url 'how-it-works' %}" aria-current="page">How it works</a>
+      <a href="{% url 'playground' %}">Playground</a>
+      <a href="/api/v1/">API</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero ------------------------------------------------------------------ -->
+    <section class="hero">
+      <p class="overhead"><span class="stage-tile">4</span>Stage 4 of the HR chatbot · Session &amp; conversation management</p>
+      <h1>Every question is part of a conversation.</h1>
+      <p class="lead">Like a good support agent with your case file: it checks the case is really yours, remembers what you said, understands that “and for part-time staff?” continues your last question, and closes the case after a day of silence.</p>
+      <ul class="legend" aria-label="Frameworks">
+        {% for key, fw in frameworks.items %}
+        <li class="fw fw-{{ key }}"><span class="fw-dot" aria-hidden="true"></span><strong>{{ fw.0 }}</strong><span>{{ fw.1 }}</span></li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- Demo -------------------------------------------------------------------- -->
+    <section class="demo" id="demo" aria-labelledby="demo-title">
+      <div class="demo-head">
+        <h2 id="demo-title" class="label">Watch a real conversation</h2>
+        <div class="scenario-tabs" role="tablist" aria-label="Scenarios">
+          {% for scenario in scenarios %}
+          <button type="button" role="tab" class="scenario-tab" data-scenario="{{ scenario.id }}" aria-selected="false">
+            <span aria-hidden="true">{{ scenario.icon }}</span>{{ scenario.title }}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+      <p class="scenario-intro" id="scenario-intro"></p>
+
+      <div class="demo-body">
+        <div class="replay">
+          <ol class="thread" id="thread" aria-live="polite"></ol>
+          <div class="controls">
+            <button type="button" class="primary" id="next-step">Next step ▸</button>
+            <button type="button" class="secondary" id="play-all">Play all</button>
+            <button type="button" class="link" id="restart">Restart</button>
+            <span class="progress" id="progress"></span>
+          </div>
+        </div>
+
+        <aside class="inside" aria-label="What happened inside">
+          <h3 class="label">What happened inside <span id="inside-for" class="inside-for"></span></h3>
+          <ol class="steps" id="steps">
+            {% for part in part_names %}
+            <li class="step" data-step="{{ part.number }}">
+              <span class="step-num fw-{{ part.framework }}">{{ part.number }}</span>
+              <span class="step-text"><a class="step-name" href="#part-{{ part.number }}" data-open-part="{{ part.number }}">{{ part.name }}</a><span class="step-note">–</span></span>
+              <span class="step-state" aria-hidden="true"></span>
+            </li>
+            {% endfor %}
+          </ol>
+          <div class="memory-box" id="memory-box" hidden>
+            <h3 class="label">Two kinds of memory after this step</h3>
+            <div class="memory-row">
+              <span class="memory-label">Transcript <small>PostgreSQL</small></span>
+              <span class="blocks" id="transcript-blocks"></span>
+              <span class="memory-count" id="transcript-count"></span>
+            </div>
+            <div class="memory-row">
+              <span class="memory-label">AI memory <small>checkpointer</small></span>
+              <span class="blocks" id="memory-blocks"></span>
+              <span class="memory-count" id="memory-count"></span>
+            </div>
+            <div class="memory-row">
+              <span class="memory-label">Tokens <small>budget</small></span>
+              <span class="meter"><span id="token-meter"></span></span>
+              <span class="memory-count" id="token-count"></span>
+            </div>
+            <p class="sticky-note" id="summary-note" hidden></p>
+          </div>
+        </aside>
+      </div>
+      <p class="demo-foot">Recorded from the real service on {{ recorded_on }} (Django, Redis, PostgreSQL, LangGraph and the LLM <code>{{ recorded_llm }}</code>). Try your own in the <a href="{% url 'playground' %}">playground</a>.</p>
+    </section>
+
+    <!-- Why ------------------------------------------------------------------- -->
+    <section class="block" aria-labelledby="why-title">
+      <h2 id="why-title">Why is this needed?</h2>
+      <p class="intro">Without stage 4, every message would be a stranger. These are the problems it solves.</p>
+      <div class="problems">
+        {% for problem in problems %}
+        <article class="problem">
+          <h3>{{ problem.title }}</h3>
+          <p class="example">{{ problem.example }}</p>
+          <p><strong>Without it:</strong> {{ problem.risk }}</p>
+          <p class="solved-by">Solved by
+            {% for part in problem.parts %}<a class="part-chip fw-{{ part.framework }}" href="#part-{{ part.number }}" data-open-part="{{ part.number }}">{{ part.number }}. {{ part.name }}</a>{% endfor %}
+          </p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Two kinds of memory -------------------------------------------------- -->
+    <section class="block" aria-labelledby="memory-title">
+      <h2 id="memory-title">The key idea: two kinds of memory</h2>
+      <p class="intro">The most important design choice. The full record is kept for people; a small working memory is kept for the AI.</p>
+      <div class="memory-compare">
+        <div class="mc-head"></div>
+        <div class="mc-head mc-transcript"><span class="fw-dot fw-blue"></span>Transcript<small>Django ORM → PostgreSQL</small></div>
+        <div class="mc-head mc-working"><span class="fw-dot fw-green"></span>AI working memory<small>LangGraph checkpointer → PostgreSQL</small></div>
+        {% for label, transcript, working in memory_comparison %}
+        <div class="mc-label">{{ label }}</div><div class="mc-cell">{{ transcript }}</div><div class="mc-cell">{{ working }}</div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- RAG ------------------------------------------------------------------ -->
+    <section class="block" aria-labelledby="rag-title">
+      <h2 id="rag-title">Where it fits in the RAG chatbot</h2>
+      <ol class="route">
+        {% for stop, detail, here in journey %}
+        <li class="route-stop{% if here %} here{% endif %}">
+          <span class="route-dot" aria-hidden="true"></span>
+          {% if here %}<span class="you-are-here">You are here</span>{% endif %}
+          <strong>{{ stop }}</strong><span>{{ detail }}</span>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+
+    <!-- One turn ------------------------------------------------------------- -->
+    <section class="block" id="turn" aria-labelledby="turn-title">
+      <h2 id="turn-title">How one chat turn runs internally</h2>
+      <p class="intro">The real order in <code>conversations/services/chat_turn.py</code>. The 10 parts are used in this order, not in list order.</p>
+      <ol class="turn-flow">
+        {% for item in turn_flow %}
+        <li>
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.text }}</span>
+          <span class="flow-parts">{% for part in item.parts %}<a class="part-chip fw-{{ part.framework }}" href="#part-{{ part.number }}" data-open-part="{{ part.number }}">{{ part.number }}</a>{% endfor %}</span>
+        </li>
+        {% endfor %}
+      </ol>
+
+      <div class="design-grid">
+        {% for title, text in design %}<article class="design"><h3>{{ title }}</h3><p>{{ text }}</p></article>{% endfor %}
+      </div>
+
+      <figure class="pitch">
+        <figcaption><span class="pitch-label">Interviewer:</span> “Explain your session and conversation management.” <span class="pitch-time">About 60 seconds</span></figcaption>
+        <blockquote>{{ pitch }}</blockquote>
+      </figure>
+
+      <h3 class="sub-title">Questions about the whole stage</h3>
+      <div class="interview">
+        {% for question, answer in questions %}
+        <div class="qa"><p class="qa-q"><span>Interviewer</span>{{ question }}</p><p class="qa-a"><span>You</span>{{ answer }}</p></div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- The 10 parts ---------------------------------------------------------- -->
+    <section class="block" id="parts" aria-labelledby="parts-title">
+      <h2 id="parts-title">The 10 parts, explained for interviews</h2>
+      <p class="intro">Pick a part. Each one shows the problem it solves, how it works internally step by step, and the questions an interviewer will ask, with answers. Colours show the framework.</p>
+      <div class="explorer" id="explorer">
+        <nav class="explorer-nav" aria-label="The 10 parts">
+          <ul>
+            {% for part in parts %}
+            <li><a class="explorer-link" href="#part-{{ part.number }}" data-open-part="{{ part.number }}"><span class="step-num fw-{{ part.framework }}">{{ part.number }}</span><span>{{ part.name }}</span></a></li>
+            {% endfor %}
+          </ul>
+        </nav>
+        <div class="lessons">
+          {% for part in parts %}
+          <article class="lesson" id="part-{{ part.number }}" data-part="{{ part.number }}" aria-labelledby="lesson-{{ part.number }}">
+            <p class="lesson-kicker"><span class="fw-badge fw-{{ part.framework }}">{{ part.tech }}</span> Part {{ part.number }} of 10</p>
+            <h3 id="lesson-{{ part.number }}" tabindex="-1">{{ part.name }}</h3>
+            <p class="one-line"><span>In one line</span>{{ part.summary }}</p>
+            <div class="lesson-top">
+              <div><h4>The problem it solves</h4><p>{{ part.problem }}</p></div>
+              <div class="before-after">
+                <p class="before"><span>Input</span>{{ part.before }}</p>
+                <p class="after state-{{ part.after_state }}"><span>Result</span>{{ part.after }}</p>
+              </div>
+            </div>
+            <h4>How it works internally</h4>
+            <ol class="internals">
+              {% for title, text in part.internals %}<li><strong>{{ title }}</strong><span>{{ text }}</span></li>{% endfor %}
+            </ol>
+            <h4>Interview questions</h4>
+            <div class="interview">
+              {% for question, answer in part.questions %}
+              <div class="qa"><p class="qa-q"><span>Interviewer</span>{{ question }}</p><p class="qa-a"><span>You</span>{{ answer }}</p></div>
+              {% endfor %}
+            </div>
+            <p class="limits"><strong>Limits:</strong> {{ part.limits }}</p>
+            <p class="file">Code: <code>{{ part.file }}</code></p>
+            <nav class="lesson-nav" aria-label="Previous and next part">
+              {% if part.previous %}<a href="#part-{{ part.previous.number }}" data-open-part="{{ part.previous.number }}"><span>Previous</span>{{ part.previous.number }}. {{ part.previous.name }}</a>{% else %}<span></span>{% endif %}
+              {% if part.next %}<a class="next" href="#part-{{ part.next.number }}" data-open-part="{{ part.next.number }}"><span>Next</span>{{ part.next.number }}. {{ part.next.name }}</a>{% endif %}
+            </nav>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- API answers ----------------------------------------------------------- -->
+    <section class="block" aria-labelledby="status-title">
+      <h2 id="status-title">What the API answers</h2>
+      <ul class="statuses">
+        {% for code, name, meaning in statuses %}
+        <li><span class="status-code s{{ code|slice:':1' }}xx">{{ code }}</span><strong>{{ name }}</strong><span>{{ meaning }}</span></li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- Developers ------------------------------------------------------------ -->
+    <section class="block devs" aria-labelledby="devs-title">
+      <h2 id="devs-title">For developers</h2>
+      <details>
+        <summary>Problems found by testing with the real LLM, and the fixes</summary>
+        <table><thead><tr><th>What happened</th><th>Fix</th></tr></thead>
+          <tbody>{% for seen, fix in fixes %}<tr><td>{{ seen }}</td><td>{{ fix }}</td></tr>{% endfor %}</tbody></table>
+      </details>
+      <details>
+        <summary>Run it</summary>
+        <pre><code>docker compose up -d                      # PostgreSQL :5440 + Redis :6390
+.venv/bin/python manage.py migrate        # Django tables + LangGraph checkpoint tables
+.venv/bin/python manage.py create_demo_users
+.venv/bin/python manage.py runserver 127.0.0.1:8040
+.venv/bin/python -m pytest                # tests
+.venv/bin/python manage.py record_explainer_examples   # re-record this page's demo</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <footer class="footer">Conversation Manager · stage 4 of the RAG request flow · <a href="{% url 'playground' %}">Playground</a> · <a href="/admin/">Admin</a></footer>
+
+  {{ scenarios|json_script:"scenarios-data" }}
+  <script src="{% static 'conversations/explainer.js' %}" defer></script>
+</body>
+</html>

@@ -27,8 +27,11 @@ How it works
     4. The output is cleaned (first line, no quotes or "Standalone question:"
        prefix) and checked: not empty, not too long, and still a question if
        the user asked one (a statement means the LLM answered instead of
-       rewriting), and not just the question echoed back. A rejected rewrite is
-       treated like a failure.
+       rewriting). An unchanged reply depends on how sure step 8 was: for a
+       clearly incomplete question ("And for part-time staff?") it is a failure;
+       for one flagged only by a pronoun ("Can they fire me during probation?")
+       it means the LLM confirmed it is already standalone, and it is used as
+       typed. A rejected rewrite is treated like a failure.
     5. If the LLM is down or the rewrite is rejected, a simple fallback joins
        the previous question and the follow-up. Retrieval still gets both
        topics, and the chat keeps working (fail soft).
@@ -126,10 +129,6 @@ def _same_text(a: str, b: str) -> bool:
 def _acceptable(rewrite: str, question: str) -> bool:
     if not rewrite or len(rewrite) > max(300, 4 * len(question)):
         return False
-    # Echoing a follow-up back is not a rewrite: "And for part-time staff?" alone
-    # would make retrieval search for part-time staff with no topic.
-    if _same_text(rewrite, question):
-        return False
     # The user asked a question, so the rewrite must be one too. A statement here
     # usually means the LLM answered instead of rewriting.
     if "?" in question and "?" not in rewrite:
@@ -149,7 +148,13 @@ def resolve_question(
     history: list[BaseMessage],
     summary: str,
     llm: BaseChatModel | None,
+    *,
+    clearly_incomplete: bool = True,
 ) -> Resolution:
+    """clearly_incomplete: step 8 saw a strong sign ("And for...?", very short, starts
+    mid-sentence). Then the question cannot stand alone, so an unchanged rewrite is
+    a failure. With only weak signs (a pronoun such as "they"), an unchanged rewrite
+    means the LLM judged the question already standalone, and it is used as typed."""
     if llm is not None:
         try:
             reply = llm.invoke(
@@ -157,7 +162,14 @@ def resolve_question(
                  HumanMessage(content=_request(render_history(history, summary), question))]
             )
             rewrite = _clean(str(reply.content))
-            if _acceptable(rewrite, question):
+            if _same_text(rewrite, question):
+                # Echoing "And for part-time staff?" would make retrieval search for
+                # part-time staff with no topic; echoing "Can they fire me during
+                # probation?" is the LLM saying it is already complete.
+                if not clearly_incomplete:
+                    return Resolution(question, "unchanged")
+                logger.warning("conversation_memory rewrite rejected (echo of a clearly incomplete question)")
+            elif _acceptable(rewrite, question):
                 return Resolution(rewrite, "llm")
             logger.warning("conversation_memory rewrite rejected (length %d)", len(rewrite))
         except Exception as exc:  # LLM down, timeout, bad response: fail soft
