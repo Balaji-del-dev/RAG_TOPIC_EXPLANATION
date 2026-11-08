@@ -1,0 +1,79 @@
+# Example questions for STEP 11. NeMo loads every .yml file in this folder;
+# anything under `custom_data` is kept for actions (rails.config.custom_data).
+#
+# A query is in scope when it is closer to an
+# allowed example than to an off-topic one, and the similarity is at least
+# TOPIC_MIN_SIMILARITY (default 0.35).
+#
+# Add real questions from your users here. More varied examples work better
+# than a higher or lower threshold.
+
+custom_data:
+  allowed_topics:
+    leave_policy:
+      - How many annual leave days do employees get?
+      - Can I carry forward unused leave to next year?
+      - What is the sick leave policy?
+      - How many sick days do I get?
+      - How many casual leaves can I take per month?
+      - How do I apply for maternity or paternity leave?
+      - Is casual leave different from earned leave?
+      - Can I take leave during my probation period?
+      - How do I cancel a leave request?
+    holidays:
+      - What are the public holidays this year?
+      - Is Diwali a paid holiday?
+      - Do we get a floating holiday?
+    attendance_and_work_hours:
+      - What are the official working hours?
+      - How is late attendance handled?
+      - What is the overtime policy?
+      - What is the work from home policy?
+      - How many days a week do I have to come to the office?
+    payroll_and_compensation:
+      - When is the salary credited each month?
+      - How do I download my payslip?
+      - How is the annual bonus calculated?
+      - How do salary increments and appraisals work?
+      - How do I submit my tax declaration?
+      - How do I get my Form 16 or other tax documents?
+      - Why was tax deducted from my salary?
+    benefits:
+      - What does the health insurance policy cover?
+      - How do I claim travel or medical reimbursement?
+      - Does the company contribute to provident fund?
+      - Is there a gratuity payment when I leave?
+    onboarding_and_exit:
+      - What documents do I need for onboarding?
+      - What is the notice period for resignation?
+      - How does the exit process and full and final settlement work?
+      - How do I get my relieving letter?
+    conduct_and_grievance:
+      - What is the code of conduct?
+      - How do I report harassment at work?
+      - What is the grievance redressal process?
+      - What is the dress code policy?
+    employee_records:
+      - How do I update my bank account details for salary?
+      - Can HR update my bank details?
+      - How do I change my address in the HR system?
+      - How do I update my emergency contact or nominee details?
+      - Can HR correct my date of birth in my records?
+      - How do I get an employment verification letter?
+    training_and_growth:
+      - Does the company pay for certification courses?
+      - How do internal job transfers work?
+
+  off_topic_examples:
+    - Write me a poem about the ocean.
+    - What is the capital of France?
+    - Who won the cricket match yesterday?
+    - Give me a recipe for chicken biryani.
+    - Write a Python function to sort a list.
+    - What is the share price of Tesla today?
+    - Tell me a joke.
+    - What will the weather be tomorrow?
+    - Recommend a good movie to watch.
+    - Explain quantum physics in simple terms.
+    - Translate this sentence into German.
+    - Who is the president of the United States?

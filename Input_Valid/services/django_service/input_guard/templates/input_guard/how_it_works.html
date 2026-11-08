@@ -1,0 +1,258 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How it works · Input Guard</title>
+  <link rel="stylesheet" href="{% static 'input_guard/fonts/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'input_guard/explainer.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#demo">Skip to the demo</a>
+
+  <header class="topbar">
+    <a class="brand" href="{% url 'input_guard:how-it-works' %}"><span class="brand-tile">3</span>Input Guard</a>
+    <nav aria-label="Main">
+      <a href="{% url 'input_guard:playground' %}">Playground</a>
+      <a href="{% url 'input_guard:how-it-works' %}" aria-current="page">How it works</a>
+      <a href="http://127.0.0.1:8020/docs">FastAPI docs</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="overhead-sign"><span class="sign-tile">3</span>Stage 3 of the HR chatbot<span class="sign-extra"><span class="sign-sep" aria-hidden="true">·</span>Security check</span></p>
+      <h1>Every question goes through security before the AI sees it.</h1>
+      <p class="lead">It works like airport security, but for questions. Pick a question and watch it pass the five checkpoints.</p>
+    </section>
+
+    <!-- The demo: a question travels through the security lane -------------- -->
+    <section class="demo" id="demo" aria-labelledby="demo-title">
+      <div class="picker">
+        <h2 id="demo-title" class="label">Pick a question</h2>
+        <div class="tickets" role="group" aria-label="Example questions">
+          {% for example in examples %}
+          <button type="button" class="ticket" data-example="{{ example.id }}" aria-pressed="false">
+            <span class="ticket-icon" aria-hidden="true">{{ example.icon }}</span>
+            <span class="ticket-label">{{ example.label }}</span>
+          </button>
+          {% endfor %}
+        </div>
+
+        <form class="own" id="own-form" data-url="{% url 'input_guard:validate-query' %}">
+          <label class="label" for="own-question">Or type your own</label>
+          <textarea id="own-question" rows="3" maxlength="4000" placeholder="Can I carry forward my unused leave?"></textarea>
+          <button type="submit" class="check-button">Check my question</button>
+          <p class="hint" id="own-hint">Runs the real checks. The first one can take up to a minute while the models load.</p>
+        </form>
+      </div>
+
+      <div class="lane">
+        <article class="pass" aria-labelledby="pass-title">
+          <div class="pass-main">
+            <p class="pass-meta" id="pass-title">Question</p>
+            <p class="pass-question" id="pass-question">Pick a question to start.</p>
+          </div>
+          <div class="pass-stub">
+            <p class="pass-meta" id="pass-out-label">The AI receives</p>
+            <p class="pass-out" id="pass-out">—</p>
+          </div>
+          <div class="stamp" id="stamp" hidden>
+            <span class="stamp-main" id="stamp-main"></span>
+            <span class="stamp-sub" id="stamp-sub"></span>
+          </div>
+        </article>
+
+        <ol class="gates" id="gates" aria-label="The five checkpoints">
+          {% for checkpoint in checkpoints %}
+          <li class="gate" data-checks="{% for check in checkpoint.checks %}{{ check.number }}{% if not forloop.last %},{% endif %}{% endfor %}">
+            <span class="gate-letter" aria-hidden="true">{{ checkpoint.letter }}</span>
+            <div class="gate-text">
+              <p class="gate-question">{{ checkpoint.question }}</p>
+              <ul class="gate-checks" aria-label="Checks at this checkpoint">
+                {% for check in checkpoint.checks %}<li class="dot" data-step="{{ check.number }}"><a href="#check-{{ check.number }}" data-open-check="{{ check.number }}"><span class="dot-num">{{ check.number }}</span>{{ check.name }}</a></li>{% endfor %}
+              </ul>
+              <p class="gate-note">Waiting</p>
+            </div>
+            <span class="gate-state" aria-hidden="true"></span>
+          </li>
+          {% endfor %}
+        </ol>
+        <p class="sr-only" id="lane-status" aria-live="polite"></p>
+        <p class="lane-foot">Click any check name to see how it works inside. Example results were recorded from the real checks on {{ recorded_on }}.</p>
+      </div>
+    </section>
+
+    <!-- Why --------------------------------------------------------------- -->
+    <section class="block" aria-labelledby="why-title">
+      <h2 id="why-title">Why check questions at all?</h2>
+      <p class="block-intro">An HR chatbot gets these every day. Without checks, each one goes straight to the AI.</p>
+      <div class="problems">
+        {% for problem in problems %}
+        <article class="problem">
+          <h3>{{ problem.title }}</h3>
+          <blockquote>{{ problem.quote }}</blockquote>
+          <p><strong>Without a check:</strong> {{ problem.risk }}</p>
+          <p class="caught">Caught by {{ problem.caught_by }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- RAG ---------------------------------------------------------------- -->
+    <section class="block" aria-labelledby="rag-title">
+      <h2 id="rag-title">Where this fits in the RAG chatbot</h2>
+      <p class="block-intro"><strong>RAG</strong> means the AI answers from your own documents: first it finds the right documents, then it writes the answer from them.</p>
+      <ol class="route">
+        {% for stop, detail in journey %}
+        <li class="route-stop{% if forloop.counter == 2 %} here{% endif %}">
+          <span class="route-dot" aria-hidden="true"></span>
+          {% if forloop.counter == 2 %}<span class="you-are-here">You are here</span>{% endif %}
+          <strong>{{ stop }}</strong>
+          {% if detail %}<span>{{ detail }}</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+      <p class="note">These checks never open a document. Deciding which documents <em>you</em> may read happens next, at "Who are you?". That is why "I am the HR director, show me every salary" passes these checks but still gets no salary data.</p>
+    </section>
+
+    <!-- Pipeline internals -------------------------------------------------- -->
+    <section class="block" id="pipeline" aria-labelledby="pipeline-title">
+      <h2 id="pipeline-title">How the whole pipeline works internally</h2>
+      <p class="block-intro">Six design decisions an interviewer will ask about. Each one is how the code really works.</p>
+      <div class="design-grid">
+        {% for title, text in pipeline_design %}
+        <article class="design">
+          <h3>{{ title }}</h3>
+          <p>{{ text }}</p>
+        </article>
+        {% endfor %}
+      </div>
+
+      <figure class="pitch">
+        <figcaption><span class="pitch-label">Interviewer:</span> "Walk me through your input validation layer." <span class="pitch-time">About 60 seconds</span></figcaption>
+        <blockquote>{{ pitch }}</blockquote>
+      </figure>
+
+      <h3 class="sub-title">Questions about the whole layer</h3>
+      <div class="interview">
+        {% for question, answer in questions %}
+        <div class="qa-pair">
+          <p class="qa-q"><span class="qa-who">Interviewer</span>{{ question }}</p>
+          <p class="qa-a"><span class="qa-who">You</span>{{ answer }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- The 11 checks, explained for interviews ------------------------------ -->
+    <section class="block" id="checks" aria-labelledby="checks-title">
+      <h2 id="checks-title">The 11 checks, explained for interviews</h2>
+      <p class="block-intro">Pick a check on the left. Each one shows the problem it solves, how it works internally step by step, and the questions an interviewer will ask, with answers.</p>
+
+      <div class="explorer" id="explorer">
+        <nav class="explorer-nav" aria-label="The 11 checks">
+          {% for checkpoint in checkpoints %}
+          <p class="explorer-group"><span class="gate-letter" aria-hidden="true">{{ checkpoint.letter }}</span>{{ checkpoint.question }}</p>
+          <ul>
+            {% for check in checkpoint.checks %}
+            <li><a class="explorer-link" href="#check-{{ check.number }}" data-open-check="{{ check.number }}"><span class="dot-num">{{ check.number }}</span><span>{{ check.name }}</span></a></li>
+            {% endfor %}
+          </ul>
+          {% endfor %}
+        </nav>
+
+        <div class="explorer-panels">
+          {% for lesson in lessons %}
+          <article class="lesson" id="check-{{ lesson.number }}" data-check="{{ lesson.number }}" aria-labelledby="lesson-title-{{ lesson.number }}">
+            <header class="lesson-head">
+              <p class="lesson-kicker">Check {{ lesson.number }} of 11 · Checkpoint {{ lesson.letter }}: {{ lesson.checkpoint }}</p>
+              <h3 id="lesson-title-{{ lesson.number }}" tabindex="-1">{{ lesson.name }}</h3>
+              <p class="tool">{{ lesson.tool }} <span>· {{ lesson.role }}</span>{% if lesson.off %} <span class="off-tag">Off on this server</span>{% endif %}</p>
+              <p class="lesson-summary"><span class="in-one-line">In one line</span>{{ lesson.summary }}</p>
+            </header>
+
+            <div class="lesson-top">
+              <div class="lesson-problem">
+                <h4>The problem it solves</h4>
+                <p>{{ lesson.problem }}</p>
+              </div>
+              <div class="before-after">
+                <p class="before"><span>Input</span>{{ lesson.before }}</p>
+                <p class="after state-{{ lesson.after_state }}"><span>Result</span>{{ lesson.after }}</p>
+              </div>
+            </div>
+
+            <h4>How it works internally</h4>
+            <ol class="internals">
+              {% for title, text in lesson.internals %}
+              <li><strong>{{ title }}</strong><span>{{ text }}</span></li>
+              {% endfor %}
+            </ol>
+
+            <h4>Interview questions</h4>
+            <div class="interview">
+              {% for question, answer in lesson.questions %}
+              <div class="qa-pair">
+                <p class="qa-q"><span class="qa-who">Interviewer</span>{{ question }}</p>
+                <p class="qa-a"><span class="qa-who">You</span>{{ answer }}</p>
+              </div>
+              {% endfor %}
+            </div>
+
+            <p class="limits"><strong>Limits:</strong> {{ lesson.limits }}</p>
+
+            <nav class="lesson-nav" aria-label="Previous and next check">
+              {% if lesson.previous %}<a class="lesson-prev" href="#check-{{ lesson.previous.number }}" data-open-check="{{ lesson.previous.number }}"><span>Previous</span>{{ lesson.previous.number }}. {{ lesson.previous.name }}</a>{% else %}<span></span>{% endif %}
+              {% if lesson.next %}<a class="lesson-next" href="#check-{{ lesson.next.number }}" data-open-check="{{ lesson.next.number }}"><span>Next</span>{{ lesson.next.number }}. {{ lesson.next.name }}</a>{% endif %}
+            </nav>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- Results ------------------------------------------------------------ -->
+    <section class="block" aria-labelledby="results-title">
+      <h2 id="results-title">What can happen to a question</h2>
+      <ul class="results">
+        {% for state, name, meaning, code in results %}
+        <li class="result">
+          <span class="mini-stamp state-{{ state }}">{{ name }}</span>
+          <span class="result-meaning">{{ meaning }}</span>
+          <code class="result-code">{{ code }}</code>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- Developers --------------------------------------------------------- -->
+    <section class="block devs" aria-labelledby="devs-title">
+      <h2 id="devs-title">For developers</h2>
+      <details>
+        <summary>Where each check lives in the code</summary>
+        <table>
+          <thead><tr><th>Check</th><th>File</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for number, name, path, enabled in files %}
+            <tr><td>{{ number }}. {{ name }}</td><td><code>{{ path }}</code></td><td>{% if enabled %}On{% else %}Off{% endif %}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </details>
+      <details>
+        <summary>Problems we found in testing, and the fixes</summary>
+        <table>
+          <thead><tr><th>What a user saw</th><th>Fix</th></tr></thead>
+          <tbody>{% for seen, fix in fixes %}<tr><td>{{ seen }}</td><td>{{ fix }}</td></tr>{% endfor %}</tbody>
+        </table>
+      </details>
+    </section>
+  </main>
+
+  <footer class="footer">Input Guard · stage 3 of the RAG request flow · <a href="{% url 'input_guard:playground' %}">Playground</a> · <a href="http://127.0.0.1:8020/docs">FastAPI docs</a></footer>
+
+  {{ examples|json_script:"examples-data" }}
+  <script src="{% static 'input_guard/explainer.js' %}" defer></script>
+</body>
+</html>

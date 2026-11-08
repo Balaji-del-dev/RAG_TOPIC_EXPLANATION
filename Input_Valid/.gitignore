@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.env
+models/*.ftz
+models/*.bin
+.cache/
+db.sqlite3
+staticfiles/
+models/fastembed/
+models/*.onnx

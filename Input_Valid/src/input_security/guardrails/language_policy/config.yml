@@ -1,0 +1,11 @@
+# NeMo Guardrails config for STEP 5 - unsupported language policy.
+#
+# No LLM is configured: this rail only runs a Python action
+# (check_language_policy, registered in language/policy.py) and,
+# if the language is not allowed, answers with the refusal message from rails.co.
+colang_version: "1.0"
+
+rails:
+  input:
+    flows:
+      - check language policy

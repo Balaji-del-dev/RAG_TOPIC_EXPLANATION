@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-input-security"
+version = "1.0.0"
+description = "Stage 3 of a RAG request flow: input validation & security (Pydantic, fastText, NeMo Guardrails, Presidio, Purview, LLM Guard, Llama Guard)"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"   # llm-guard 0.3.16 supports up to 3.12
+dependencies = [
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "pyyaml>=6",
+    "numpy>=1.26",
+    "httpx>=0.27",
+    "fasttext-predict>=0.9.2.4",     # step 4  fastText (prediction-only build)
+    "nemoguardrails==0.24.1",        # steps 5, 11 (includes FastEmbed)
+    "presidio-analyzer==2.2.358",    # step 6  (version pinned by llm-guard)
+    "presidio-anonymizer==2.2.358",
+    "msal>=1.28",                    # step 7  Purview: Entra ID token
+    "llm-guard==0.3.16",             # steps 8, 9 (pins transformers 4.51.3)
+    "torch>=2.4",                    # used by llm-guard; install the CPU wheel on CPU servers
+]
+
+[project.optional-dependencies]
+fastapi = ["fastapi>=0.115", "uvicorn[standard]>=0.30"]
+django = ["Django>=5.2"]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+input_security = ["guardrails/*/*.yml", "guardrails/*/*.co"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["services/fastapi_service"]
+addopts = "-q"
+markers = [
+    "models: needs a downloaded model (fastText, spaCy, FastEmbed); skipped when missing",
+    "heavy: loads a large model (LLM Guard DeBERTa, Llama Guard); run with RUN_HEAVY_TESTS=1",
+]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning"]

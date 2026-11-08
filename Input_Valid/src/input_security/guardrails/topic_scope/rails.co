@@ -1,0 +1,10 @@
+# STEP 11 - allowed topic / scope validation (Colang 1.0)
+
+define bot redirect to hr topics
+  "I can only help with HR policy questions, for example leave, attendance, payroll, benefits, onboarding, exit process or workplace conduct. Please ask a question about one of these topics."
+
+define flow check topic scope
+  $in_scope = execute check_topic_scope
+  if not $in_scope
+    bot redirect to hr topics
+    stop

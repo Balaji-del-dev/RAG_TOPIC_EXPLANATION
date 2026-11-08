@@ -1,0 +1,13 @@
+# STEP 5 - unsupported language policy (Colang 1.0)
+#
+# $detected_language, $allowed_language_names, ... are context variables that
+# language/policy.py sends with every check.
+
+define bot refuse unsupported language
+  "Sorry, I can only answer questions written in $allowed_language_names. Please ask your question again in one of these languages."
+
+define flow check language policy
+  $language_allowed = execute check_language_policy
+  if not $language_allowed
+    bot refuse unsupported language
+    stop

@@ -1,0 +1,31 @@
+# NeMo Guardrails config for STEP 11 - allowed topic / scope validation.
+#
+# The input rail "check topic scope" calls the Python action check_topic_scope
+# (scope/topic_scope.py). It compares the question with the example questions
+# in allowed_topics.yml using the same FastEmbed embedding model NeMo uses
+# internally (all-MiniLM-L6-v2), so no LLM call is needed.
+#
+# Want an LLM to judge the scope instead? Add a model and NeMo's built-in
+# self check input rail, for example:
+#
+#   models:
+#     - type: main
+#       engine: ollama
+#       model: qwen2.5:1.5b
+#   rails:
+#     input:
+#       flows:
+#         - self check input
+#   prompts:
+#     - task: self_check_input
+#       content: |
+#         The assistant answers only company HR policy questions ...
+#         User message: "{{ user_input }}"
+#         Question: Should the user message be blocked (Yes or No)?
+#         Answer:
+colang_version: "1.0"
+
+rails:
+  input:
+    flows:
+      - check topic scope

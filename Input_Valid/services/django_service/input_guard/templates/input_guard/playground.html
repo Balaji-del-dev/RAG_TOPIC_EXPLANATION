@@ -1,0 +1,97 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Input Validation &amp; Security · Playground</title>
+  <link rel="stylesheet" href="{% static 'input_guard/fonts/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'input_guard/playground.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% url 'input_guard:how-it-works' %}"><span class="brand-tile">3</span>Input Guard</a>
+    <nav aria-label="Main">
+      <a href="{% url 'input_guard:playground' %}" aria-current="page">Playground</a>
+      <a href="{% url 'input_guard:how-it-works' %}">How it works</a>
+      <a href="http://127.0.0.1:8020/docs">FastAPI docs</a>
+    </nav>
+  </header>
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Developer view · every check, every score</p>
+      <h1>Playground</h1>
+      <p class="subtitle">Type a question and see the full result of all 11 checks. New here? Start with <a href="{% url 'input_guard:how-it-works' %}">How it works</a>.</p>
+    </div>
+    <a class="api-link" href="{% url 'input_guard:health-ready' %}">/health/ready</a>
+  </header>
+
+  <main class="layout">
+    <section class="card">
+      <h2>Try a query</h2>
+      <form method="post" action="{% url 'input_guard:playground' %}">
+        {% csrf_token %}
+        <label for="query" class="label">User query</label>
+        <textarea id="query" name="query" rows="5" placeholder="How many annual leave days do employees get?">{{ query }}</textarea>
+        <div class="examples" aria-label="Example queries">
+          {% for label, text in examples %}
+            <button type="button" class="chip" data-query="{{ text }}">{{ label }}</button>
+          {% endfor %}
+        </div>
+        <button type="submit" class="primary">Validate query</button>
+      </form>
+    </section>
+
+    {% if result %}
+    <section class="card result decision-{{ result.decision.value|lower }}">
+      <div class="result-head">
+        <span class="badge">{{ result.decision.value }}</span>
+        <span class="status">HTTP {{ result.http_status }} · {{ result.total_latency_ms }} ms</span>
+      </div>
+      <p class="message">{{ result.message }}</p>
+
+      {% if result.sanitized_query %}
+        <p class="label">Query sent to stage 4 (authentication &amp; authorization)</p>
+        <pre class="sanitized">{{ result.sanitized_query }}</pre>
+      {% endif %}
+
+      {% if result.errors %}
+        <p class="label">Validation errors</p>
+        <ul class="errors">
+          {% for error in result.errors %}<li><code>{{ error.type }}</code> step {{ error.step }}: {{ error.message }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if show_steps %}
+        <p class="label">Step trace</p>
+        <table class="steps">
+          <thead><tr><th>#</th><th>Check</th><th>Tool</th><th>Result</th><th>ms</th><th>Details</th></tr></thead>
+          <tbody>
+            {% for step in step_rows %}
+            <tr class="row-{{ step.decision|lower }}{% if step.skipped %} row-skipped{% endif %}">
+              <td>{{ step.step }}</td>
+              <td>{{ step.name }}<div class="reason">{{ step.reason }}</div></td>
+              <td class="tool">{{ step.tool }}</td>
+              <td><span class="pill">{% if step.skipped %}SKIPPED{% else %}{{ step.decision }}{% endif %}</span></td>
+              <td class="num">{{ step.latency_ms }}</td>
+              <td><code class="details">{{ step.details_json }}</code></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <p class="hint">The trace is shown because EXPOSE_STEP_DETAILS=true. Keep it off in production.</p>
+      {% endif %}
+    </section>
+    {% endif %}
+  </main>
+
+  <script>
+    document.querySelectorAll(".chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const box = document.getElementById("query");
+        box.value = chip.dataset.query;
+        box.focus();
+      });
+    });
+  </script>
+</body>
+</html>
